@@ -41,7 +41,8 @@ L1 sizes: 8 and 64 KB
 ## Analysis
 The benchmark operates on two `8KB` buffers (`16KB` total), exceeding the capacity of the `8KB` L1 cache, increasing cache pressure. Because of this the `8KB` cache has substantially higher L1 misses than the `64KB` cache, where the working set fits into the cache. Higher cache misses for the vector implementation are likley due to the vector kernel boundary lookahead that loads (`u[i+vl]`) causing additional cache misses.
 
-The vector implementation achives lower CPI than the scalar version and its CPI decreases with increased VPU width. As a wider VPU processes more elements per instruction, meaning fewer instructions are needed to process the same 1024 elements.
+The vector implementation achives lower CPI than the scalar version and its CPI decreases with increased VPU width. As a wider VPU processes more elements per instruction. Leading to fewer instructions that are needed to process the same 1024 elements.
 
 At `L1 64KB` there are barely any cache misses, but  as before with increased VPU size vector CPI drops, as it procesess more data per cycle.
 
+Even with higher cache miss counts vector implementation achieves lower CPI than the scalar version. Wider vector instructions process multiple elements at once, reducing the total number of executed instructions and amortizing memory access overhead across more computation.
