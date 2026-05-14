@@ -189,6 +189,15 @@ int main(int argc, char *argv[])
 {
     int NNZ = DEFAULT_NNZ;
     int M   = DEFAULT_M;
+    
+    /* ── Determine which kernel(s) to run ──────────────────────────────── */
+    /* Command-line argument: 0=all, 1=unit_stride, 2=strided,
+       3=gather_sorted, 4=gather_random */
+    int kernel_id = 0;
+    if (argc > 1) {
+        kernel_id = atoi(argv[1]);
+        if (kernel_id < 0 || kernel_id > 4) kernel_id = 0;
+    }
 
    
     // Allocate arrays
@@ -231,38 +240,46 @@ int main(int argc, char *argv[])
     make_byte_offsets(col_sorted, off_sorted, NNZ);
     make_byte_offsets(col_random, off_random, NNZ);
 
-    #ifdef GEM5
-    m5_reset_stats(0, 0);
-    #endif 
-    rvv_spmv_unit_stride(val, x, y_test, NNZ);
-    #ifdef GEM5
-    m5_dump_stats(0, 0);
-    #endif
+    /* Run selected kernel(s) */
+    if (kernel_id == 0 || kernel_id == 1) {
+        #ifdef GEM5
+        m5_reset_stats(0, 0);
+        #endif 
+        rvv_spmv_unit_stride(val, x, y_test, NNZ);
+        #ifdef GEM5
+        m5_dump_stats(0, 0);
+        #endif
+    }
 
-    #ifdef GEM5
-    m5_reset_stats(0, 0);
-    #endif 
-    rvv_spmv_strided(val, x_strided, y_test, NNZ, 8);
-    #ifdef GEM5
-    m5_dump_stats(0, 0);
-    #endif
+    if (kernel_id == 0 || kernel_id == 2) {
+        #ifdef GEM5
+        m5_reset_stats(0, 0);
+        #endif 
+        rvv_spmv_strided(val, x_strided, y_test, NNZ, 8);
+        #ifdef GEM5
+        m5_dump_stats(0, 0);
+        #endif
+    }
     
-    #ifdef GEM5
-    m5_reset_stats(0, 0);
-    #endif
-    rvv_spmv_gather_sorted(val, x, off_sorted, y_test, NNZ);
-    #ifdef GEM5
-    m5_dump_stats(0, 0);
-    #endif
+    if (kernel_id == 0 || kernel_id == 3) {
+        #ifdef GEM5
+        m5_reset_stats(0, 0);
+        #endif
+        rvv_spmv_gather_sorted(val, x, off_sorted, y_test, NNZ);
+        #ifdef GEM5
+        m5_dump_stats(0, 0);
+        #endif
+    }
 
-
-    #ifdef GEM5
-    m5_reset_stats(0, 0);
-    #endif
-    rvv_spmv_gather_random(val, x, off_random, y_test, NNZ),
-    #ifdef GEM5
-    m5_dump_stats(0, 0);
-    #endif
+    if (kernel_id == 0 || kernel_id == 4) {
+        #ifdef GEM5
+        m5_reset_stats(0, 0);
+        #endif
+        rvv_spmv_gather_random(val, x, off_random, y_test, NNZ);
+        #ifdef GEM5
+        m5_dump_stats(0, 0);
+        #endif
+    }
 
 
 

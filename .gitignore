@@ -25,11 +25,3 @@ workload/lu_decomp/
 __pycache__/
 backup/
 horner_scheme/
-
-!run_slurm.sh
-!stats.txt
-citations.bib
-config.dot
-config.dot.pdf
-config.dot.svg
-config.ini
