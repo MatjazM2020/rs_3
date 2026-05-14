@@ -7,7 +7,7 @@ L1 sizes: 8 and 64 KB
 ## Summary Statistics
 
 === L1 cache: 8KB ===
- VLEN | impl   |      CPI |    L1 misses  
+ VPU  | impl   |      CPI |    L1 misses  
 ------|--------|----------|-------------
   128 | scalar |   2.5472 |           47
   128 | vector |   2.4678 |          282
@@ -23,7 +23,7 @@ L1 sizes: 8 and 64 KB
  4096 | vector |   2.2063 |          581
 
 === L1 cache: 64KB ===
- VLEN | impl   |      CPI |    L1 misses
+ VPU  | impl   |      CPI |    L1 misses
 ------|--------|----------|-------------
   128 | scalar |   2.5370 |            0
   128 | vector |   2.4451 |           44
@@ -39,7 +39,9 @@ L1 sizes: 8 and 64 KB
  4096 | vector |   1.7267 |           52
 
 ## Analysis
-The key parameter is `N = 1024` doubles. Each array is `1024 × 8 = 8KB`and the code uses two buffers in a ping pong pattern (`buf_a, buf_b`). Meaning so the total working set is `8KB` and it doesn't fit into the 8KB L1 cache. That is why L1 misses are much higher at `L1 8KB`. But we do see that the vector implementation CPI decreases with increased VLEN. As a larger VLEN means that each vector instruction covers more elements, so fewer instructions are needed to process the same 1024 elements.
+The benchmark operates on two `8KB` buffers (`16KB` total), exceeding the capacity of the `8KB` L1 cache, increasing cache pressure. Because of this the `8KB` cache has substantially higher L1 misses than the `64KB` cache, where the working set fits into the cache. Higher cache misses for the vector implementation are likley due to the vector kernel boundary lookahead that loads (`u[i+vl]`) causing additional cache misses.
 
-At `L1 64KB` there are barely any cache misses, but with increased VLEN size vector CPI drops, as it procesess more data per cycle.
+The vector implementation achives lower CPI than the scalar version and its CPI decreases with increased VPU width. As a wider VPU processes more elements per instruction, meaning fewer instructions are needed to process the same 1024 elements.
+
+At `L1 64KB` there are barely any cache misses, but  as before with increased VPU size vector CPI drops, as it procesess more data per cycle.
 

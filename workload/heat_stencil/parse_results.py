@@ -43,17 +43,17 @@ def extract(sec, key):
 
 def print_table(results_dir):
     base = Path(results_dir)
-    VLENS = [128, 256, 512, 1024, 2048, 4096]
+    VPUS = [128, 256, 512, 1024, 2048, 4096]
 
     for cache in ['8kb', '64kb']:
         print(f"\n=== L1 cache: {cache} ===")
-        print(f"{'VLEN':>5} | {'impl':6} | {'CPI':>8} | {'L1 misses':>12}")
-        print(f"{'-----':>5}-+-{'------':6}-+-{'--------':>8}-+-{'------------':>12}")
+        print(f"{'VPU':>5} | {'impl':6} | {'CPI':>8} | {'L1 misses':>12}")
+        print(f"{'-----':>5}---{'------':6}---{'--------':>8}---{'------------':>12}")
 
-        for vlen in VLENS:
-            stats_file = base / cache / f'vlen_{vlen}' / 'stats.txt'
+        for vpu in VPUS:
+            stats_file = base / cache / f'vlen_{vpu}' / 'stats.txt'
             if not stats_file.exists():
-                print(f"{vlen:>5} | {'?':6} | {'no file':>8} | {'?':>12}")
+                print(f"{vpu:>5} | {'?':6} | {'no file':>8} | {'?':>12}")
                 continue
 
             sections = parse_stats(stats_file)
@@ -62,14 +62,14 @@ def print_table(results_dir):
             for i, label in enumerate(labels):
                 idx = i + 1
                 if idx >= len(sections):
-                    print(f"{vlen:>5} | {label:6} | {'no data':>8} | {'?':>12}")
+                    print(f"{vpu:>5} | {label:6} | {'no data':>8} | {'?':>12}")
                     continue
                 sec = sections[idx]
                 cpi    = extract(sec, 'board.processor.cores.core.cpi')
                 misses = extract(sec, 'board.cache_hierarchy.l1dcaches.overallMisses::total')
-                cpi_str  = f"{cpi:.4f}" if cpi is not None else "?"
-                miss_str = f"{int(misses)}" if misses is not None else "?"
-                print(f"{vlen:>5} | {label:6} | {cpi_str:>8} | {miss_str:>12}")
+                cpi_str  = f"{cpi:.4f}" if cpi is not None else "0"
+                miss_str = f"{int(misses)}" if misses is not None else "0"
+                print(f"{vpu:>5} | {label:6} | {cpi_str:>8} | {miss_str:>12}")
 
 
 if __name__ == '__main__':
