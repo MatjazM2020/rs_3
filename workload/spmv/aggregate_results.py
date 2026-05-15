@@ -39,17 +39,10 @@ def parse_stats_file(filepath):
 
 def extract_key_metrics(metrics):
     """Extract key performance metrics from parsed stats."""
-    sim_ticks = metrics.get('simTicks', 0)
-    sim_insts = metrics.get('simInsts', 0)
-    
-    # Calculate CPI = simTicks / simInsts
-    cpi = sim_ticks / sim_insts if sim_insts > 0 else 0
     
     extracted = {
         'simSeconds': metrics.get('simSeconds', 0),
-        'simTicks': sim_ticks,
-        'simInsts': sim_insts,
-        'cpi': cpi,
+        'cpi': metrics.get('board.processor.cores.core.cpi', 0),
         'hostSeconds': metrics.get('hostSeconds', 0),
         'l1d_read_hits': metrics.get('board.cache_hierarchy.l1dcaches.ReadReq.hits::total', 0),
         'l1d_read_misses': metrics.get('board.cache_hierarchy.l1dcaches.ReadReq.misses::total', 0),
