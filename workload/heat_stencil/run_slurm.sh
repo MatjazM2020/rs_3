@@ -36,7 +36,7 @@ for VLEN in $VLENS; do
         --outdir="$OUTDIR" \
         "$SCRIPT_DIR/cpu_benchmark.py" \
         --vlen=$VLEN \
-        --l1d=8KiB
+        --l1-size=8KiB
     echo "  done (exit $?)"
 done
 
@@ -52,7 +52,7 @@ for VLEN in $VLENS; do
         --outdir="$OUTDIR" \
         "$SCRIPT_DIR/cpu_benchmark.py" \
         --vlen=$VLEN \
-        --l1d=64KiB
+        --l1-size=64KiB
     echo "  done (exit $?)"
 done
 
